@@ -1,0 +1,5 @@
+data/local.properties.i
+data/build.xml.i
+data/scripts/android-projector.i
+data/scripts/android-projector.bat.i
+data/src/com/google/android/AndroidProjector.java.i
