@@ -36,6 +36,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Event;
 
 import com.android.ddmlib.RawImage;
 
@@ -43,6 +46,7 @@ public class AndroidProjector {
     private Label mImageLabel;
     private RawImage mRawImage;
     private boolean mRotateImage = false;
+    private int mWidth;
 
     private final static String ADB_HOST = "127.0.0.1";
     private final static int ADB_PORT = 5037;
@@ -57,9 +61,16 @@ public class AndroidProjector {
     private void open() throws IOException {
         Display.setAppName("Android Projector");
         Display display = new Display();
-        Shell shell = new Shell(display);
+        final Shell shell = new Shell(display);
         shell.setText("Device Screen");
         createContents(shell);
+	shell.addListener(SWT.Resize, new Listener() {
+		public void handleEvent(Event e) {
+		    Rectangle rect = shell.getClientArea();
+		    mWidth = rect.width;
+		}
+	    });
+	    
         shell.open();
 
         SocketChannel adbChannel = null;
@@ -224,6 +235,7 @@ public class AndroidProjector {
     }
 
     private void updateDeviceImage(Shell shell, RawImage rawImage) {
+	if (mWidth == 0) mWidth = rawImage.width;
         PaletteData paletteData = new PaletteData(
                 rawImage.getRedMask(),
                 rawImage.getGreenMask(),
@@ -234,7 +246,7 @@ public class AndroidProjector {
                 rawImage.bpp,
                 paletteData,
                 1,
-                rawImage.data);
+                rawImage.data).scaledTo(rawImage.width*mWidth/rawImage.width, rawImage.height*mWidth/rawImage.width);
         Image image = new Image(shell.getDisplay(), imageData);
         mImageLabel.setImage(image);
         mImageLabel.pack();
