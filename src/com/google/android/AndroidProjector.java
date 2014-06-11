@@ -67,7 +67,8 @@ public class AndroidProjector {
 	shell.addListener(SWT.Resize, new Listener() {
 		public void handleEvent(Event e) {
 		    Rectangle rect = shell.getClientArea();
-		    mWidth = rect.width;
+		    if (Math.abs(rect.width - mWidth) > 10)
+			mWidth = rect.width;
 		}
 	    });
 	    
