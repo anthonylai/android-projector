@@ -47,6 +47,9 @@ public class AndroidProjector {
     private RawImage mRawImage;
     private boolean mRotateImage = false;
     private int mWidth;
+		private Image mImage;
+		private int mDisposeCount;
+		private int mNullCount;
 
     private final static String ADB_HOST = "127.0.0.1";
     private final static int ADB_PORT = 5037;
@@ -55,7 +58,8 @@ public class AndroidProjector {
     private String mSerialNumber;
 
     public AndroidProjector(String serialNumber) {
-	mSerialNumber = serialNumber;
+				System.out.println("Test version");
+				mSerialNumber = serialNumber;
     }
 
     private void open() throws IOException {
@@ -248,8 +252,16 @@ public class AndroidProjector {
                 paletteData,
                 1,
                 rawImage.data).scaledTo(rawImage.width*mWidth/rawImage.width, rawImage.height*mWidth/rawImage.width);
-        Image image = new Image(shell.getDisplay(), imageData);
-        mImageLabel.setImage(image);
+				//        Image image = new Image(shell.getDisplay(), imageData);
+				//        mImageLabel.setImage(image);
+				if (mImage == null) {
+						System.out.println("mNullCount: " + (++mNullCount));
+				} else {
+						System.out.println("mDisposeCount: " + (++mDisposeCount));
+						mImage.dispose();
+				}
+        mImage = new Image(shell.getDisplay(), imageData);
+        mImageLabel.setImage(mImage);				
         mImageLabel.pack();
         shell.pack();
     }
